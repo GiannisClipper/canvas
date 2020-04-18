@@ -82,67 +82,62 @@ class Drawing {
     }
 
     start( args ) {
-        if ( this.shape.type !== 'free' ) {
-            const cursorX = args.e.layerX;
-            const cursorY = args.e.layerY;
+        const cursorX = args.e.layerX;
+        const cursorY = args.e.layerY;
 
-            this.shape.createObject({
-                fill: 'rgba(0,0,0,0)', // transparent
-                strokeWidth: 1,
-                stroke: this.styling.fill,
-                strokeDashArray: [1, 2], // 1px dot 2px space
-                left: cursorX,
-                top: cursorY,
-                right: cursorX,
-                bottom: cursorY,
-            });
+        this.shape.createObject({
+            fill: 'rgba(0,0,0,0)', // transparent
+            strokeWidth: 1,
+            stroke: this.styling.fill,
+            strokeDashArray: [1, 2], // 1px dot 2px space
+            left: cursorX,
+            top: cursorY,
+            right: cursorX,
+            bottom: cursorY,
+        });
 
-            this.startX = cursorX;
-            this.startY = cursorY;
-            this.hasStarted = true;
-        };
+        this.startX = cursorX;
+        this.startY = cursorY;
+        this.hasStarted = true;
     }
 
     continue( args ) {
-        if ( this.shape.type !== 'free' ) {
-            if ( this.hasStarted ) {
-                const cursorX = args.e.layerX;
-                const cursorY = args.e.layerY;
-                let left = this.shape.object.left;
-                let top = this.shape.object.top;
-                let right = this.shape.object.left + this.shape.object.width;
-                let bottom = this.shape.object.top + this.shape.object.height;
+        if ( this.hasStarted ) {
+            const cursorX = args.e.layerX;
+            const cursorY = args.e.layerY;
+            let left = this.shape.object.left;
+            let top = this.shape.object.top;
+            let right = this.shape.object.left + this.shape.object.width;
+            let bottom = this.shape.object.top + this.shape.object.height;
 
-                left = cursorX < this.startX ? cursorX : this.startX;
-                top = cursorY < this.startY ? cursorY : this.startY;
-                right = cursorX > this.startX ? cursorX : this.startX;
-                bottom = cursorY > this.startY ? cursorY : this.startY;
+            left = cursorX < this.startX ? cursorX : this.startX;
+            top = cursorY < this.startY ? cursorY : this.startY;
+            right = cursorX > this.startX ? cursorX : this.startX;
+            bottom = cursorY > this.startY ? cursorY : this.startY;
 
-                this.shape.modifyObject({ left, top, right, bottom });
-            };
+            this.shape.modifyObject({ left, top, right, bottom });
         };
     }
 
     finish() {
-        if ( this.shape.type !== 'free' ) {
-            if ( this.hasStarted ) {
-                const left = this.shape.object.left;
-                const top = this.shape.object.top;
-                const right = this.shape.object.left + this.shape.object.width;
-                const bottom = this.shape.object.top + this.shape.object.height;
+        if ( this.hasStarted ) {
+            const left = this.shape.object.left;
+            const top = this.shape.object.top;
+            const right = this.shape.object.left + this.shape.object.width;
+            const bottom = this.shape.object.top + this.shape.object.height;
 
-                this.canvas.remove( this.shape.object );
-                this.shape.createObject({
-                    fill: this.styling.fill,
-                    strokeWidth: null,
-                    stroke: null,
-                    strokeDashArray: null,
-                    left,
-                    top,
-                    right,
-                    bottom,
-                });
-            };
+            this.canvas.remove( this.shape.object );
+            this.shape.createObject({
+                fill: this.styling.fill,
+                strokeWidth: null,
+                stroke: null,
+                strokeDashArray: null,
+                left,
+                top,
+                right,
+                bottom,
+            });
+
             this.hasStarted = false;
         };
         console.log('drawing completed', this.canvas.getObjects());
