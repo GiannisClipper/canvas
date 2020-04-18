@@ -1,0 +1,119 @@
+<html>
+
+<head>
+
+    <meta charset="utf-8"> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.min.js"></script>
+
+    <script src="./canvasClasses.js"></script>
+
+    <script>
+
+    const init = () => {
+        console.log('Canvas initializing...');
+
+        document.canvas = new Canvas( 'canvas', 500, 250 );
+
+        document.addEventListener('keyup', e => keyPressed(e), false);
+
+        showCanvasMode();
+        showShapeType();
+        showStylingFill();
+
+        console.log('Canvas initialized!');
+    }
+
+    const keyPressed = e => {
+        switch( e.keyCode ) {
+        case 8: // Backspace
+        case 46: // Del
+            document.canvas.selecting.remove();
+            break;
+        case 33: // PgUp
+            document.canvas.selecting.bringForward();
+            break;
+        case 34: // PgDn
+            document.canvas.selecting.sendBackwards();
+            break;
+        case 36: // Home
+            document.canvas.selecting.bringToFront();
+            break;
+        case 35: // End
+            document.canvas.selecting.sendToBack();
+            break;
+        };
+    }
+
+    const showCanvasMode = () => document.getElementById('showCanvasMode').innerHTML = 'Mode:' + document.canvas.mode;
+    const showShapeType = () => document.getElementById('showShapeType').innerHTML = 'Shape:' + document.canvas.drawing.shape.type;
+    const showStylingFill = () => document.getElementById('showStylingFill').innerHTML = 'Fill:' + document.canvas.styling.fill;
+
+    const setCanvasMode = mode => {
+        document.canvas.mode = mode;
+        showCanvasMode();
+    }
+
+    const setShapeType = type => {
+        document.canvas.drawing.shape.type = type;
+        showShapeType();
+    }
+
+    const setStylingFill = color => {
+        document.canvas.styling.fill = color;
+        showStylingFill();
+    }
+
+    const doSelectingRemove = () => document.canvas.selecting.remove();
+    const doSelectingBringToFront = () => document.canvas.selecting.bringToFront();
+    const doSelectingBringForward = () => document.canvas.selecting.bringForward();
+    const doSelectingSendBackwards = () => document.canvas.selecting.sendBackwards();
+    const doSelectingSendToBack = () => document.canvas.selecting.sendToBack();
+
+    </script>
+
+</head>
+
+<body onload="init()">
+
+    <h3>Hello FabricJS!</h3>
+
+    <div>
+        <input type="button" onClick="setCanvasMode('drawing')" value="Drawing"/>
+        <input type="button" onClick="setCanvasMode('selecting')" value="Selecting"/>
+        <span id="showCanvasMode"></span>
+    </div>
+
+    <div>
+        <input type="button" onClick="setShapeType('rect')" value="Rect"/>
+        <input type="button" onClick="setShapeType('triangle')" value="Triangle"/>
+        <input type="button" onClick="setShapeType('circle')" value="Circle"/>
+        <input type="button" onClick="setShapeType('free')" value="Free"/>
+        <span id="showShapeType"></span>
+    </div>
+
+    <div>
+        <input type="button" onClick="setStylingFill('yellow')" style="background-color:yellow;"/>
+        <input type="button" onClick="setStylingFill('orange')" style="background-color:orange;"/>
+        <input type="button" onClick="setStylingFill('red')" style="background-color:red;"/>
+        <input type="button" onClick="setStylingFill('magenta')" style="background-color:magenta;"/>
+        <input type="button" onClick="setStylingFill('green')" style="background-color:green;"/>
+        <input type="button" onClick="setStylingFill('cyan')" style="background-color:cyan;"/>
+        <input type="button" onClick="setStylingFill('steelblue')" style="background-color:steelblue;"/>
+        <input type="button" onClick="setStylingFill('blue')" style="background-color:blue;"/>
+        <span id="showStylingFill"></span>
+    </div>
+
+    <div>
+        <input type="button" onClick="doSelectingRemove()" value="Remove"/>
+        <input type="button" onClick="doSelectingSendToBack()" value="Back"/>
+        <input type="button" onClick="doSelectingSendBackwards()" value="Backward"/>
+        <input type="button" onClick="doSelectingBringForward()" value="Forward"/>
+        <input type="button" onClick="doSelectingBringToFront()" value="Front"/>
+    </div>
+
+    <canvas id="canvas" style="border: 1px dotted black"/>
+    <!--width=400 height=200 style="height:500px;width:500px;"></canvas>-->
+
+</body>
+
+</html>
