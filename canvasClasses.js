@@ -9,7 +9,9 @@
 
 class Canvas {
     constructor( className, width, height ) {
-        this.canvas = new fabric.Canvas( className );
+        this.canvas = new fabric.Canvas( className, { backgroundColor: 'rgb(100,100,200)' } );
+
+        this.canvas.className = className;
         this.canvas.setWidth( String( width ) );
         this.canvas.setHeight( String( height ) );
         this.canvas.preserveObjectStacking = true; // Do'nt bring-to-front when objects selected
@@ -20,9 +22,12 @@ class Canvas {
 
         this.selecting = new Selecting( this.canvas );
 
+        this.scrolling = new Scrolling( this.canvas );
+
         this._mode = {
             drawing: false,
             selecting: false,
+            scrolling: false,
         };
 
         this.drawing.shape.type = 'rect';
@@ -37,13 +42,22 @@ class Canvas {
             this.canvas.defaultCursor = 'crosshair';
             this.canvas.getObjects().forEach( obj => obj.hoverCursor = this.canvas.defaultCursor );
             this.selecting.disable();
+            this.scrolling.disable();
             this.drawing.enable();
 
-        } else { // selecting
+        } else if ( this._mode.selecting ) {
             this.canvas.defaultCursor = 'pointer';
             this.canvas.getObjects().forEach( obj => obj.hoverCursor = this.canvas.defaultCursor );
             this.drawing.disable();
+            this.scrolling.disable();
             this.selecting.enable();
+
+        } else { // secrolling
+            this.canvas.defaultCursor = 'move';
+            this.canvas.getObjects().forEach( obj => obj.hoverCursor = this.canvas.defaultCursor );
+            this.drawing.disable();
+            this.selecting.disable();
+            this.scrolling.enable();
         };
     }
 
@@ -183,6 +197,74 @@ class Selecting {
     sendToBack() {
         const obj = this.canvas.getActiveObject();
         obj.sendToBack();
+    }
+}
+
+class Scrolling {
+    constructor( canvas ) {
+        this.canvas = canvas;
+        this.canvasHTML = document.getElementById( this.canvas.className );
+        this.canvasHTML.style.position = 'relative';
+        this.containerHTML = this.canvasHTML.parentElement.parentElement;
+        this.enabled = false;
+    }
+
+    containerWidth() {
+        return !this.containerHTML ? null : parseInt( this.containerHTML.style.width );
+    }
+
+    containerHeight() {
+        return !this.containerHTML ? null : parseInt( this.containerHTML.style.height );
+    }
+
+    enable() {
+        this.disable();
+        this.canvas.on({
+            'mouse:down': args => this.start( args ),
+            'mouse:move': args => this.continue( args ),
+            'mouse:up': () => this.finish(),
+        });
+        this.enabled = true;
+    }
+
+    disable() {
+        this.canvas.off();
+        this.enabled = false;
+    }
+
+    start( args ) {
+        const cursorX = args.e.layerX;
+        const cursorY = args.e.layerY;
+
+        this.startX = cursorX;
+        this.startY = cursorY;
+        this.hasStarted = true;
+    }
+
+    continue( args ) {
+        if ( this.hasStarted ) {
+            const cursorX = args.e.layerX;
+            const cursorY = args.e.layerY;
+
+            const diffX = cursorX - this.startX;
+            const diffY = cursorY - this.startY;
+
+            if ( this.containerWidth() && this.containerWidth() < parseInt(this.canvasHTML.style.width) ) {
+                this.canvasHTML.style.left = parseInt(this.canvasHTML.style.left) + diffX;
+            }
+            if ( this.containerHeight() && this.containerHeight() < parseInt(this.canvasHTML.style.height) ) {
+                this.canvasHTML.style.top = parseInt(this.canvasHTML.style.top) + diffY;
+            }
+
+            this.startX = cursorX;
+            this.startY = cursorY;
+        };
+    }
+
+    finish() {
+        if ( this.hasStarted ) {
+            this.hasStarted = false;
+        };
     }
 }
 

@@ -1,7 +1,16 @@
 <html>
 
 <head>
+<!--    <style>
+        html, body {
+            overflow: hidden;
+        }
 
+        #canvas {
+            position: relative;
+        }
+    </style>
+-->
     <meta charset="utf-8"> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.4.0/fabric.min.js"></script>
 
@@ -12,7 +21,7 @@
     const init = () => {
         console.log('Canvas initializing...');
 
-        document.canvas = new Canvas( 'canvas', 500, 250 );
+        document.canvas = new Canvas( 'canvas', 400, 300 );
 
         document.addEventListener('keyup', e => keyPressed(e), false);
 
@@ -80,6 +89,7 @@
     <div>
         <input type="button" onClick="setCanvasMode('drawing')" value="Drawing"/>
         <input type="button" onClick="setCanvasMode('selecting')" value="Selecting"/>
+        <input type="button" onClick="setCanvasMode('scrolling')" value="Scrolling"/>
         <span id="showCanvasMode"></span>
     </div>
 
@@ -111,8 +121,10 @@
         <input type="button" onClick="doSelectingBringToFront()" value="Front"/>
     </div>
 
-    <canvas id="canvas" style="border: 1px dotted black"/>
-    <!--width=400 height=200 style="height:500px;width:500px;"></canvas>-->
+    <div class="container" style="width:400px;height:300px;overflow:hidden;scrollbar-width:none;">
+        <canvas id="canvas" style="border:1px dotted black" />
+        <!--width=400 height=200 style="height:500px;width:500px;"></canvas>-->
+    </div>
 
 </body>
 
