@@ -21,7 +21,7 @@
     const init = () => {
         console.log('Canvas initializing...');
 
-        document.canvas = new Canvas( 'canvas', 400, 300 );
+        document.canvas = new Canvas( 'canvas', 1000, 1000 );
 
         document.addEventListener('keyup', e => keyPressed(e), false);
 
@@ -121,8 +121,8 @@
         <input type="button" onClick="doSelectingBringToFront()" value="Front"/>
     </div>
 
-    <div class="container" style="width:400px;height:300px;overflow:hidden;scrollbar-width:none;">
-        <canvas id="canvas" style="border:1px dotted black" />
+    <div class="container" style="width:400px;height:300px;overflow:hidden;">
+        <canvas id="canvas" style="border:1px dotted black;" />
         <!--width=400 height=200 style="height:500px;width:500px;"></canvas>-->
     </div>
 

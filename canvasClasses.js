@@ -203,27 +203,28 @@ class Selecting {
 class Scrolling {
     constructor( canvas ) {
         this.canvas = canvas;
-        this.canvasHTML = document.getElementById( this.canvas.className );
-        this.canvasHTML.style.position = 'relative';
-        this.containerHTML = this.canvasHTML.parentElement.parentElement;
+        this.canvasParent = document.getElementById( this.canvas.className ).parentElement.parentElement;
         this.enabled = false;
     }
 
     containerWidth() {
-        return !this.containerHTML ? null : parseInt( this.containerHTML.style.width );
+        return !this.canvasParent ? null : parseInt( this.canvasParent.style.width );
     }
 
     containerHeight() {
-        return !this.containerHTML ? null : parseInt( this.containerHTML.style.height );
+        return !this.canvasParent ? null : parseInt( this.canvasParent.style.height );
     }
 
     enable() {
         this.disable();
-        this.canvas.on({
-            'mouse:down': args => this.start( args ),
-            'mouse:move': args => this.continue( args ),
-            'mouse:up': () => this.finish(),
-        });
+        // this.canvas.on({
+        //     'mouse:down': args => this.start( args ),
+        //     'mouse:move': args => this.continue( args ),
+        //     'mouse:up': () => this.finish(),
+        // });
+        this.canvasParent.onmousedown = args => this.start( args );
+        this.canvasParent.onmousemove = args => this.continue( args );
+        this.canvasParent.onmouseup = () => this.finish();
         this.enabled = true;
     }
 
@@ -233,32 +234,36 @@ class Scrolling {
     }
 
     start( args ) {
-        const cursorX = args.e.layerX;
-        const cursorY = args.e.layerY;
-
-        this.startX = cursorX;
-        this.startY = cursorY;
+        // this.startCursorX = args.e.layerX;
+        // this.startCursorY = args.e.layerY;
+        this.startCursorX = args.clientX;
+        this.startCursorY = args.clientY;
+        this.startScrollLeft = this.canvasParent.scrollLeft;
+        this.startScrollTop = this.canvasParent.scrollTop;
         this.hasStarted = true;
+        console.log('start!!!!!!!!!!')
+        console.log('=', this.startCursorX, this.startCursorY);
     }
 
     continue( args ) {
+
         if ( this.hasStarted ) {
-            const cursorX = args.e.layerX;
-            const cursorY = args.e.layerY;
 
-            const diffX = cursorX - this.startX;
-            const diffY = cursorY - this.startY;
+            window.requestAnimationFrame(() => {
+                // const cursorX = args.e.layerX;
+                // const cursorY = args.e.layerY;
+                const cursorX = args.clientX;
+                const cursorY = args.clientY;
+    
+                const diffCursorX = cursorX - this.startCursorX;
+                const diffCursorY = cursorY - this.startCursorY;
 
-            if ( this.containerWidth() && this.containerWidth() < parseInt(this.canvasHTML.style.width) ) {
-                this.canvasHTML.style.left = parseInt(this.canvasHTML.style.left) + diffX;
-            }
-            if ( this.containerHeight() && this.containerHeight() < parseInt(this.canvasHTML.style.height) ) {
-                this.canvasHTML.style.top = parseInt(this.canvasHTML.style.top) + diffY;
-            }
+                const newScrollLeft = this.startScrollLeft - diffCursorX;
+                const newScrollTop = this.startScrollTop - diffCursorY;
 
-            this.startX = cursorX;
-            this.startY = cursorY;
-        };
+                this.canvasParent.scroll({ left: newScrollLeft, top: newScrollTop, behavior: 'smooth' });
+            });
+        }
     }
 
     finish() {
@@ -316,6 +321,7 @@ class Shape {
         this.object.selectable = false;
         this.object.hoverCursor = this.canvas.defaultCursor;
         this.canvas.add( this.object );
+
         this.canvas.renderAll();
     }
 
