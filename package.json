@@ -1,0 +1,13 @@
+{
+    "name": "canvas",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+    },
+    "scripts": {
+      "test": "jest"
+    },
+    "devDependencies": {
+    }
+  }
+  

@@ -52,8 +52,8 @@ class Canvas {
             this.scrolling.disable();
             this.selecting.enable();
 
-        } else { // secrolling
-            this.canvas.defaultCursor = 'move';
+        } else { // scrolling
+            this.canvas.defaultCursor = 'grab';
             this.canvas.getObjects().forEach( obj => obj.hoverCursor = this.canvas.defaultCursor );
             this.drawing.disable();
             this.selecting.disable();
