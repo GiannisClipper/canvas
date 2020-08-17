@@ -7,7 +7,7 @@ const SCREENSHOTS_PATH = './__tests__/screenshots';
 
 describe( 'Loading main.html', () => {
     
-    let browser, page;
+    let browser, page, canvas, bounds;
 
     beforeAll( async () => {
 
@@ -27,6 +27,12 @@ describe( 'Loading main.html', () => {
         } );
 
         await page.goto( 'file:///c:/github/canvas/main.html' );
+
+        canvas = await page.$( '#canvas' );
+        bounds = await page.evaluate( canvas => {
+            const { top, left, bottom, right } = canvas.getBoundingClientRect();
+            return { top, left, bottom, right };
+        }, canvas );
 
     } );
 
@@ -54,36 +60,24 @@ describe( 'Loading main.html', () => {
 
     }, 16000 );
 
+    test( 'Checking canvas left bound', () => {
+        expect( parseInt( bounds.left ) ).toBe( 8 );
+    }, 16000 );
+
+    test( 'Checking canvas top bound', () => {
+        expect( parseInt( bounds.top ) ).toBe( 136 );
+    }, 16000 );
+
+    test( 'Checking canvas right bound', () => {
+        expect( parseInt( bounds.right ) ).toBe( 1010 );
+    }, 16000 );
+
+    test( 'Checking canvas bottom bound', () => {
+        expect( parseInt( bounds.bottom ) ).toBe( 1138 );        
+    }, 16000 );
+
     describe( 'Drawing on canvas', () => {
     
-        let canvas, bounds;
-    
-        beforeAll( async () => {    
-
-            canvas = await page.$( '#canvas' );
-            bounds = await page.evaluate( canvas => {
-                const { top, left, bottom, right } = canvas.getBoundingClientRect();
-                return { top, left, bottom, right };
-            }, canvas );
-
-        } );
-    
-        test( 'Checking canvas left bound', () => {
-            expect( parseInt( bounds.left ) ).toBe( 8 );
-        }, 16000 );
-
-        test( 'Checking canvas top bound', () => {
-            expect( parseInt( bounds.top ) ).toBe( 136 );
-        }, 16000 );
-
-        test( 'Checking canvas right bound', () => {
-            expect( parseInt( bounds.right ) ).toBe( 1010 );
-        }, 16000 );
-
-        test( 'Checking canvas bottom bound', () => {
-            expect( parseInt( bounds.bottom ) ).toBe( 1138 );        
-        }, 16000 );
-
         test( 'Drawing default shape-color', async () => {    
             
             await page.mouse.move( bounds.left + 20, bounds.top + 20 );
@@ -185,5 +179,27 @@ describe( 'Loading main.html', () => {
         } );
         
     } );
+
+    test( 'Checking scrolling', async () => {
+
+        await page.click('#scrolling');
+        const result = await page.$eval( '#showCanvasMode', e => e.innerHTML );
+        expect( result ).toBe( 'Mode:scrolling' );
+
+        await page.mouse.move( bounds.left + 100, bounds.top + 100 );
+        await page.mouse.down();
+        await page.mouse.move( bounds.left + 50, bounds.top + 50 );
+        await page.mouse.up();
+
+        const scrollDiff =  await page.evaluate(() => {
+            const elem = document.getElementById( 'canvas' ).parentElement.parentElement;
+            return { left: elem.scrollLeft, top: elem.scrollTop };
+        } );
+        expect( scrollDiff.left ).toBeGreaterThan( 0 );
+        expect( scrollDiff.left ).toBeLessThanOrEqual( 50 );
+        expect( scrollDiff.top ).toBeGreaterThan( 0 );
+        expect( scrollDiff.top ).toBeLessThanOrEqual( 50 );
+
+    }, 16000 );
 
 } );
