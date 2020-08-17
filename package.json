@@ -1,13 +1,15 @@
 {
-    "name": "canvas",
-    "version": "0.1.0",
-    "private": true,
-    "dependencies": {
-    },
-    "scripts": {
-      "test": "jest"
-    },
-    "devDependencies": {
-    }
+  "name": "canvas",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "i": "^0.3.6",
+    "jest": "^26.4.0",
+    "pixelmatch": "^5.2.1",
+    "puppeteer": "^5.2.1"
   }
-  
+}
